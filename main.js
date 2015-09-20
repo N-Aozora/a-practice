@@ -2,10 +2,12 @@ var height=document.documentElement.clientHeight||document.body.clientHeight,
     leftFloorNavs=document.getElementById("left-floor-navs"),
     leftFloorNavsList=leftFloorNavs.getElementsByTagName("a"),	  //左侧悬浮楼层导航集合
     floorList=document.getElementsByClassName("floor-item"),	//所有的楼层对象集合
+    menuNavList=document.getElementById("side-navs").getElementsByTagName("li"),	//所有菜单导航对象集合 
     floorListHeight=[];	//储存所有楼层距文档最顶部的距离
 
 getFloorsTopHeight();
 leftFloorNavsEvent();
+menuNavEvent();
 document.onscroll=floorScollEvent;
 
 //获得所有楼层距离顶部的距离
@@ -121,3 +123,23 @@ function changeLeftNavs(n){
 	oA.innerHTML=oA.getAttribute("data-value");
 	oA.className+=" now";
 }
+
+//商品分类导航事件
+function menuNavEvent(){
+	for(var i=0,n=menuNavList.length;i<n;i++){
+		menuNavList[i].onmouseover=function(){
+			for(var j=0;j<n;j++){
+				if(/now/.test(menuNavList[j].className)){
+					menuNavList[j].className=menuNavList[j].className.replace(/\s*now/,"");
+				}
+			}
+			this.className+=" now hover";
+		}
+		
+		menuNavList[i].onmouseout=function(){
+			this.className=this.className.replace(/\s*hover\s*/,"");
+		}
+	}
+}
+
+
