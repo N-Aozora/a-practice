@@ -1,14 +1,42 @@
 var height=document.documentElement.clientHeight||document.body.clientHeight,
     leftFloorNavs=document.getElementById("left-floor-navs"),
     leftFloorNavsList=leftFloorNavs.getElementsByTagName("a"),	  //左侧悬浮楼层导航集合
-    floorList=document.getElementsByClassName("floor-item"),	//所有的楼层对象集合
-    menuNavList=document.getElementById("side-navs").getElementsByTagName("li"),	//所有菜单导航对象集合 
+    floorList=getByClass("main-content","floor-item"),	//所有的楼层对象集合
+    menuNavList=document.getElementById("side-navs").getElementsByTagName("li"),	//所有菜单导航对象集合
+    moreNavItem=getByClass("navs-menu","navs-menu-item");	//所有2级菜单集合
     floorListHeight=[];	//储存所有楼层距文档最顶部的距离
 
 getFloorsTopHeight();
 leftFloorNavsEvent();
 menuNavEvent();
 document.onscroll=floorScollEvent;
+
+//从一个父元素获取相应类名的子元素集合
+function getByClass(parentId,cls){
+	var parent=document.getElementById(parentId);
+	var childs=parent.childNodes;
+	var oDivs=[];
+	for(var i in childs){
+		if(childs[i].className==undefined) continue;
+		var arr=childs[i].className.split(" ");
+		for(var j in arr){
+			if(arr[j]==cls) oDivs.push(childs[i]);
+		}
+	}
+	return oDivs;
+}
+
+//判断一个元素是否是另一个元素的父元素
+function isParentNode(childNode,parentNode){
+	while(childNode&&childNode.tagName.toLowerCase()!="body"){
+		if(childNode.parentNode==parentNode){
+			return true;
+		}else{
+			childNode=childNode.parentNode;
+		}
+	}
+	return false;
+}
 
 //获得所有楼层距离顶部的距离
 function getFloorsTopHeight(){
@@ -126,20 +154,103 @@ function changeLeftNavs(n){
 
 //商品分类导航事件
 function menuNavEvent(){
+	var timer;
 	for(var i=0,n=menuNavList.length;i<n;i++){
-		menuNavList[i].onmouseover=function(){
+		menuNavList[i].setAttribute("data-index",i);
+		moreNavItem[i].setAttribute("data-index",i);
+
+		menuNavList[i].onmouseover=function(e){
+			var e=e||window.event;
+			if(e.relatedTarget==this||isParentNode(e.relatedTarget,this)
+				||e.relatedTarget.getAttribute("data-index")==this.getAttribute("data-index")){
+				return;
+			} 
+			clearInterval(timer);
 			for(var j=0;j<n;j++){
 				if(/now/.test(menuNavList[j].className)){
 					menuNavList[j].className=menuNavList[j].className.replace(/\s*now/,"");
 				}
+				if(/hover/.test(moreNavItem[j].className)&&j!=0){
+					moreNavItem[j].className=moreNavItem[j].className.replace(/\s*hover/g,"");
+					moreNavItem[j].style.left="-10px";
+					moreNavItem[j].style.opacity=0.8;
+				}
+			}
+			var i=this.getAttribute("data-index");
+			moreNavItem[0].className=moreNavItem[0].className.replace(/\s*hover/g,"");
+			if(i==0){
+				moreNavItem[0].className+=" hover";
 			}
 			this.className+=" now hover";
+			moreNavItem[i].className+=" hover";
+			if(i!=0){
+				timer=setInterval(function(){
+					console.log(1)
+					if(moreNavItem[i].style.left=="0px"){
+						clearInterval(timer);
+						return;
+					}
+					if(getComputedStyle(moreNavItem[i],false).display=="none"){
+						moreNavItem[i].style.display="block";
+					}
+					moreNavItem[i].style.left=parseInt(getComputedStyle(moreNavItem[i],false).left)+2+"px";
+					moreNavItem[i].style.opacity=parseFloat(getComputedStyle(moreNavItem[i],false).opacity)+0.03;
+				},50)
+			}
 		}
 		
-		menuNavList[i].onmouseout=function(){
-			this.className=this.className.replace(/\s*hover\s*/,"");
+		menuNavList[i].onmouseout=function(e){
+			var e=e||window.event;
+			if(e.relatedTarget==this||isParentNode(e.relatedTarget,this)) return;
+			this.className=this.className.replace(/\s*hover/,"");
+			var i=this.getAttribute("data-index");
+			if(i==0){
+				moreNavItem[0].className=moreNavItem[0].className.replace(/\s*hover/,"");
+			}
+			if(i!=0&&!isParentNode(e.relatedTarget,document.getElementById("navs-menu"))){
+				clearInterval(timer);
+				timer=setInterval(function(){
+
+					if(moreNavItem[i].style.left=="-10px"){
+						moreNavItem[i].className=moreNavItem[i].className.replace(/\s*hover/,"");
+						clearInterval(timer);
+						return;
+					}
+					moreNavItem[i].style.left=parseInt(getComputedStyle(moreNavItem[i],false).left)-2+"px";
+					moreNavItem[i].style.opacity=parseFloat(getComputedStyle(moreNavItem[i],false).opacity)-0.03;
+				},50)
+			}
+		}
+
+		moreNavItem[i].onmouseover=function(e){
+			var e=e||window.event;
+			if(e.relatedTarget==this||isParentNode(e.relatedTarget,this)) return;
+			menuNavList[this.getAttribute("data-index")].className+=" hover";
+		}
+
+		moreNavItem[i].onmouseout=function(e){
+			var e=e||window.event;
+			if(e.relatedTarget==this||isParentNode(e.relatedTarget,this)
+				||e.relatedTarget.getAttribute("data-index")==this.getAttribute("data-index")){
+				return;
+			} 
+			var i=this.getAttribute("data-index");
+			menuNavList[i].className=menuNavList[i].className.replace(/\s*hover/,"");
+			if(i!=0&&!isParentNode(e.relatedTarget,document.getElementById("navs-menu"))){
+				timer=setInterval(function(){
+					if(moreNavItem[i].style.left=="-10px"){
+						moreNavItem[i].className=moreNavItem[i].className.replace(/\s*hover/,"");
+						clearInterval(timer);
+						return;
+					}
+					moreNavItem[i].style.left=parseInt(getComputedStyle(moreNavItem[i],false).left)-2+"px";
+					moreNavItem[i].style.opacity=parseFloat(getComputedStyle(moreNavItem[i],false).opacity)-0.03;
+				},50)
+			}
 		}
 	}
 }
+
+
 
 
