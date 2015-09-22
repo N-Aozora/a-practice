@@ -3,7 +3,8 @@ var height=document.documentElement.clientHeight||document.body.clientHeight,
     leftFloorNavsList=leftFloorNavs.getElementsByTagName("a"),	  //左侧悬浮楼层导航集合
     floorList=getByClass("main-content","floor-item"),	//所有的楼层对象集合
     menuNavList=document.getElementById("side-navs").getElementsByTagName("li"),	//所有菜单导航对象集合
-    moreNavItem=getByClass("navs-menu","navs-menu-item");	//所有2级菜单集合
+    moreNavItem=getByClass("navs-menu","navs-menu-item"),	//所有2级菜单集合
+    mainPicItem=getByClass("main-pic","item"),   //所有广告图集合
     floorListHeight=[];	//储存所有楼层距文档最顶部的距离
 
 getFloorsTopHeight();
@@ -175,6 +176,9 @@ function menuNavEvent(){
 					moreNavItem[j].style.left="-10px";
 					moreNavItem[j].style.opacity=0.8;
 				}
+				if(/hover/.test(mainPicItem[j].className)){
+					mainPicItem[j].className=mainPicItem[j].className.replace(/\s*hover/g,"");
+				}
 			}
 			var i=this.getAttribute("data-index");
 			moreNavItem[0].className=moreNavItem[0].className.replace(/\s*hover/g,"");
@@ -183,9 +187,10 @@ function menuNavEvent(){
 			}
 			this.className+=" now hover";
 			moreNavItem[i].className+=" hover";
+			mainPicItem[i].className+=" hover";
+			document.getElementById("menu-content").style.backgroundColor=mainPicItem[i].getAttribute("data-color");
 			if(i!=0){
 				timer=setInterval(function(){
-					console.log(1)
 					if(moreNavItem[i].style.left=="0px"){
 						clearInterval(timer);
 						return;
@@ -210,7 +215,6 @@ function menuNavEvent(){
 			if(i!=0&&!isParentNode(e.relatedTarget,document.getElementById("navs-menu"))){
 				clearInterval(timer);
 				timer=setInterval(function(){
-
 					if(moreNavItem[i].style.left=="-10px"){
 						moreNavItem[i].className=moreNavItem[i].className.replace(/\s*hover/,"");
 						clearInterval(timer);
@@ -232,6 +236,7 @@ function menuNavEvent(){
 			var e=e||window.event;
 			if(e.relatedTarget==this||isParentNode(e.relatedTarget,this)
 				||e.relatedTarget.getAttribute("data-index")==this.getAttribute("data-index")){
+
 				return;
 			} 
 			var i=this.getAttribute("data-index");
