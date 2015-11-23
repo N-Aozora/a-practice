@@ -1,0 +1,107 @@
+* { margin: 0; 
+	padding: 0;}
+
+body { -moz-user-select: none; 
+		font-family: "微软雅黑";
+	   	font-size: 14px; 
+	   	color: #555555;}
+
+.wrap { width: 100%; 
+		height: 600px; 
+		background-color: #333; 
+		position: absolute; 
+		top: 50%; 
+		margin-top: -300px; 
+		overflow: hidden;}
+
+.photo { width: 240px; 
+		 height: 300px; 
+		 position: absolute; 
+		 z-index: 1; 
+		 box-shadow: 0 0 1px rgba(0,0,0,.01); 
+ 		 transition: all .6s; 
+ 		 top: 50%; 
+ 		 margin-top: -150px; 
+ 		 left: 50%; 
+ 		 margin-left: -120px;
+ 		 cursor: pointer;}
+
+.photo .side { width: 100%; 
+			   height: 100%; 
+			   background-color: #EEEEEE; 
+			   position: absolute; 
+			   top: 0px; 
+			   left: 0px; 
+			   padding: 15px; 
+			   box-sizing: border-box;}
+
+.photo .side_front .image { width: 100%; 
+							height: 240px; 
+							overflow: hidden; 
+							line-height: 240px;}
+
+.photo .side_front .image img { width: 100%;}
+
+.photo .side_front .caption { text-align: center; 
+							  line-height: 40px; 
+							  font-size: 16px;}
+
+.photo .side_back .desc { color: #666; 
+						  line-height: 1.5em;}
+
+.photo_center { top: 50%; 
+				margin-top: -150px; 
+				left: 50%; 
+				margin-left: -120px; 
+				z-index: 999;}
+
+.photo-wrap { width: 100%; 
+			  height: 100%; 
+			  position: absolute; 
+			  transform-style: preserve-3d; 
+			  transition: all .6s;}
+
+.photo-wrap .side_front { transform: rotateY(0deg);}
+
+.photo-wrap .side_back { transform: rotateY(180deg);}
+
+.photo-wrap .side { backface-visibility: hidden;}
+
+.photo_front .photo-wrap { transform: rotateY(0deg);}
+
+.photo_back .photo-wrap { transform: rotateY(180deg);}
+
+.nav { width: 80%; 
+	   height: 30px; 
+	   line-height: 30px; 
+	   position: absolute; 
+	   left: 10%; 
+	   bottom: 20px; 
+	   z-index: 999;
+ 	   text-align: center;}
+
+.nav .i { width: 30px; 
+		  height: 30px; 
+		  display: inline-block; 
+		  background-color: #aaa; 
+		  border-radius: 50%; 
+		  cursor: pointer;
+ 		  transform: scale(.48); transition: all .6s;}
+
+.nav .i:after { content: url(../img/ico.png); 
+				opacity: 0;} 
+
+.nav .i_current { transform: scale(1);}
+
+.nav .i_current:after { opacity: 1;}	
+
+.nav .i_back  { transform: rotateY(-180deg); 
+			    background-color: #555;}
+
+.photo-wrap { transform-origin: 0% 50%;}
+
+.photo_front .photo-wrap { transform: translate(0px,0px) 
+						   rotateY(0deg);}
+
+.photo_back .photo-wrap { transform: translate(240px,0px) 
+						  rotateY(180deg);}

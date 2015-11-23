@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+</head>
+<body>
+	<canvas id="canvas" style="display:block; margin:0 auto; border:1px solid #999;"></canvas>
+	<script type="text/javascript">
+
+		var ball={x:600,y:10,vx:-2,vy:0,g:0.5,color:"red"}; 
+
+		var canvas=document.getElementById("canvas");
+		canvas.width=1200;
+		canvas.height=600;
+		var ctx=canvas.getContext("2d");
+		var r=8;
+
+		var timer=setInterval(move,20);
+
+		function move(){
+			ctx.clearRect(0,0,1200,600);
+			ctx.fillStyle=ball.color;
+			ctx.beginPath();
+			ctx.arc(ball.x,ball.y,r,0,2*Math.PI);
+			ctx.closePath();
+			ctx.fill();
+			change();
+		}
+
+		function change(){
+			ball.x+=ball.vx;
+			ball.y+=ball.vy;
+			ball.vy+=ball.g;
+			if(ball.y>=canvas.height-r){
+				ball.y=canvas.height-r;
+				ball.vy=-(ball.vy-ball.g)*0.5;
+			}
+		}
+
+	</script>
+</body>
+</html>

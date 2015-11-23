@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+	<style type="text/css">
+		* {margin:0; padding:0;}
+	</style>
+</head>
+<body >
+	<canvas id="canvas" style="display: block; margin:20px auto; border: 1px solid #999;"></canvas>
+	<script type="text/javascript" src="digit.js"></script>
+	<script type="text/javascript">
+
+		var canvas=document.getElementById("canvas");
+		var ctx=canvas.getContext("2d");
+		
+		var Width=document.documentElement.clientWidth*9/10;
+		var Height=document.documentElement.clientHeight*9/10;
+		canvas.width=Math.max(Width,300);
+		canvas.height=Math.max(Height,100);
+		var margin_top=Height*1/10;	//画布顶部内间距
+		var margin_left=Width*1/10;	 //画布左侧内间距
+		var radius=canvas.width*4/5/107-1;	//小球半径
+
+		//窗口大小发生改变时重新设置画布
+		window.onresize=function(){
+			var _w=Width;	//储存先前的画布宽度
+			var _h=Height;	//储存先前的画布高度
+			Width=document.documentElement.clientWidth*9/10;
+			Height=document.documentElement.clientHeight*9/10;
+			canvas.width=Math.max(Width,300);
+			canvas.height=Math.max(Height,100);
+			margin_top=Height*1/10;	
+			margin_left=Width*1/10;	 
+			radius=canvas.width*4/5/107-1;	
+			//根据窗口大小改变的比例更改小球位置及速度
+			for(var i=0;i<balls.length;i++){
+				balls[i].x*=Width/_w;
+				balls[i].y*=Height/_h;
+				balls[i].vx*=Width/_w;
+				balls[i].vy*=Height/_h;
+			}
+		}
+
+		/*var endtime=new Date('2015/7/18,0:0:0');  //倒计时结束时间*/
+		var nowtime=new Date();
+		var balls=[];	//储存掉落小球
+		var ballscolor=["#33B5E5","#0099CC","#AA66CC","#9933CC","#99CC00","#669900","#FFBB33","#FF8800","#FF4444","#CC0000"];
+
+		/*//获得当前剩余时间
+		var hours=parseInt(gettime()/3600);
+		var minutes=parseInt(gettime()/60%60);
+		var seconds=gettime()%60;*/
+
+		//获得当前时间
+		var hours=nowtime.getHours();
+		var minutes=nowtime.getMinutes();
+		var seconds=nowtime.getSeconds();
+
+		var timer=setInterval('render(ctx)',50);
+
+		/*function gettime(){
+			var nowtime=new Date();
+			var reslt=Math.round((endtime-nowtime)/1000);
+			return reslt>0?reslt:0;
+		}*/
+
+		function render(ctx){
+			//设置前一次剩余时间，用于比较
+			var lasthours=hours;
+			var lastminutes=minutes;
+			var lastseconds=seconds;
+
+			//重新获得当前剩余时间
+			/*hours=parseInt(gettime()/3600);
+			minutes=parseInt(gettime()/60%60);
+			seconds=gettime()%60;*/
+
+			nowtime=new Date();
+			hours=nowtime.getHours();
+			minutes=nowtime.getMinutes();
+			seconds=nowtime.getSeconds();
+
+			//比较当前时间和前次时间是否一致
+			if(parseInt(lasthours/10)!=parseInt(hours/10)){
+				getball(margin_left,margin_top,parseInt(hours/10));
+			}
+			if(parseInt(lasthours%10)!=parseInt(hours%10)){
+				getball(margin_left+15*(radius+1),margin_top,parseInt(hours%10));
+			}
+			if(parseInt(lastminutes/10)!=parseInt(minutes/10)){
+				getball(margin_left+39*(radius+1),margin_top,parseInt(minutes/10));
+			}
+			if(parseInt(lastminutes%10)!=parseInt(minutes%10)){
+				getball(margin_left+54*(radius+1),margin_top,parseInt(minutes%10));
+			}
+			if(parseInt(lastseconds/10)!=parseInt(seconds/10)){
+				getball(margin_left+78*(radius+1),margin_top,parseInt(seconds/10));
+			}
+			if(parseInt(lastseconds%10)!=parseInt(seconds%10)){
+				getball(margin_left+93*(radius+1),margin_top,parseInt(seconds%10));
+			}
+
+			ctx.clearRect(0,0,canvas.width,canvas.height);
+
+			start(margin_left,margin_top,parseInt(hours/10),ctx);
+			start(margin_left+15*(radius+1),margin_top,parseInt(hours%10),ctx);
+			start(margin_left+30*(radius+1),margin_top,10,ctx);
+			start(margin_left+39*(radius+1),margin_top,parseInt(minutes/10),ctx);
+			start(margin_left+54*(radius+1),margin_top,parseInt(minutes%10),ctx);
+			start(margin_left+69*(radius+1),margin_top,10,ctx);
+			start(margin_left+78*(radius+1),margin_top,parseInt(seconds/10),ctx);
+			start(margin_left+93*(radius+1),margin_top,parseInt(seconds%10),ctx);
+			
+			fillballs();
+
+			//当小球运动出边界时清除小球
+			for(var i=0;i<balls.length;i++){
+				if(balls[i].x+radius<0||balls[i].x-radius>canvas.width){
+					balls.splice(i,1);
+				}
+			}
+		}
+
+		//根据变化的数字添加小球
+		function getball(x,y,num){
+			for(var i=0;i<digit[num].length;i++){
+				for(var j=0;j<digit[num][i].length;j++){
+					if(digit[num][i][j]==1){
+						var ball={
+								x:x+j*2*(radius+1)+radius+1,	//绘制的x坐标
+								y:y+i*2*(radius+1)+radius+1,	//绘制的y坐标
+								vx:radius/2*Math.pow(-1,parseInt(Math.random()*10)),	//横向速度
+								vy:-5,	//纵向速度
+								g:1.5+Math.random(),	//掉落速度
+								color:ballscolor[Math.floor(Math.random()*ballscolor.length)]	//颜色
+							}
+						balls.push(ball);
+					}
+				}
+			}
+		}
+
+		function fillballs(){
+			for(var i=0;i<balls.length;i++){
+				ctx.fillStyle=balls[i].color;
+				ctx.beginPath();
+				ctx.arc(balls[i].x,balls[i].y,radius,0,2*Math.PI);
+				ctx.closePath();
+				ctx.fill();
+				balls[i].x+=balls[i].vx;
+				balls[i].y+=balls[i].vy;
+				balls[i].vy+=balls[i].g;
+				//弹跳检测
+				if(balls[i].y>=canvas.height-radius){
+					balls[i].y=canvas.height-radius;
+					balls[i].vy=(-balls[i].vy+balls[i].g)*0.6;
+				}
+			}
+		}
+
+		function start(x,y,num,ctx){
+			ctx.fillStyle="rgb(0,102,153)";
+			for(var i=0;i<digit[num].length;i++){
+				for(var j=0;j<digit[num][i].length;j++){
+					if(digit[num][i][j]==1){
+						ctx.beginPath();
+						ctx.arc(x+j*2*(radius+1)+radius+1,y+i*2*(radius+1)+radius+1,radius,0,2*Math.PI);
+						ctx.closePath();
+						ctx.fill();
+					}
+				}
+			}
+		}
+	</script>
+</body>
+</html>
